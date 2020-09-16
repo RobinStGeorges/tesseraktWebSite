@@ -1,0 +1,41 @@
+.page{
+  background-image: url('../images/redpanda.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+  border-color: #BFAB25;
+  border-width : 2px ;
+  border-style: solid;
+  text-align: center;
+  padding: 0 15%;
+}
+a{
+  color: #2D3142;
+}
+h1, h2 {
+  font-family: 'Abril Fatface', cursive;
+}
+p {
+  font-family: 'Lato', sans-serif;
+  line-height: 27px;
+  font-size: 127%;
+}
+.bording{
+  border: 1px darkgray solid;
+  padding: 2%;
+  margin-bottom: 120px;
+}
+.content{
+  text-align: left;
+  margin: 2%;
+}
+.carousel{
+  margin: 10%;
+  padding: 10%;
+}
+img{
+  height: 30px;
+  height: auto;
+}
