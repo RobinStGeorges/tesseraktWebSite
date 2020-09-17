@@ -1,5 +1,5 @@
 .page{
-  background-image: url('../images/redpanda.jpg');
+  background-image: url('/static/css/redpanda.jpg');
   background-attachment: fixed;
   background-size: cover;
   background-repeat: no-repeat;
@@ -15,10 +15,10 @@ a{
   color: #2D3142;
 }
 h1, h2 {
-  font-family: 'Abril Fatface', cursive;
+  font-family: 'Roboto', cursive;
 }
 p {
-  font-family: 'Lato', sans-serif;
+  font-family: 'Roboto', sans-serif;
   line-height: 27px;
   font-size: 127%;
 }

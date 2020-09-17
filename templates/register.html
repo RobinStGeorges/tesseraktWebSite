@@ -1,0 +1,30 @@
+{% from "_formhelpers.html" import render_field %}
+<!DOCTYPE html>
+<html>
+    <header>
+        <link rel="stylesheet" link href="/static/css/index.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    </header>
+    <body>
+        <div class='page'>
+            <div class='content'>
+                <div class="row">
+                    <div class='col-3'></div>
+                    <div class='col-6'>
+                        <form method=post>
+                            <dl>
+                                {{ render_field(form.username) }}
+                                {{ render_field(form.email) }}
+                                {{ render_field(form.password) }}
+                                {{ render_field(form.confirm) }}
+                                {{ render_field(form.accept_tos) }}
+                            </dl>
+                            <p><input type=submit value=Register>
+                        </form>
+                    </div>
+                    <div class='col-3'></div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
