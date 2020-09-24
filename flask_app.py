@@ -41,6 +41,7 @@ bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+global isAdminGlobal
 
 class LoginForm(FlaskForm):
     email = StringField('email', validators=[DataRequired()])
@@ -67,7 +68,7 @@ class User(db.Model, UserMixin):
     def __init__(self, emailUser, userPassword):
         self.email = emailUser
         self.password = userPassword
-        isAdmin = 0
+        self.isAdmin = 0
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
@@ -89,7 +90,10 @@ def login():
         user=User.query.filter_by(email=userEmail).first()
         if bcrypt.check_password_hash(user.password, password):
             login_user(user)
-            return render_template('infos.html')
+            session['isLoggedIn'] = 1
+            session['email'] = user.email
+            session['isAdmin'] = user.isAdmin
+            return redirect(url_for('info'))
         else:
             return jsonify('erreur: 401')
     else:
@@ -106,26 +110,31 @@ def register():
             user = User(userEmail, bcrypt.generate_password_hash(password))
             db.session.add(user)
             db.session.commit()
-            return render_template('infos.html')
+            return redirect(url_for('info'))
         else:
             return jsonify('erreur: 401')
     else:
-        return render_template('register.html', form=form)
+        return render_template('register.html', form=form, admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
+
+@app.route('/infos')
+def info():
+    return render_template('infos.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
 
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return Response('<p>Logged out</p>')
+    session['isAdmin'] = 0
+    session['isLoggedIn'] = 0
+    return redirect(url_for('login'))
 
 @app.errorhandler(401)
 def page_not_found(e):
     return Response('<p>Login failed</p>')
 
 @login_manager.user_loader
-def load_user(userEmail):
-    user=User.query.filter_by(email=userEmail).first()
-    return user
+def load_user(user_id):
+    return User.query.get(user_id)
 
 @app.route('/protected')
 @flask_login.login_required
@@ -136,9 +145,13 @@ def protected():
 def unauthorized_handler():
     return 'Unauthorized'
 
+@app.route("/index", methods=["GET", "POST"])
+def indexPath():
+    return render_template("index.html", admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html",  admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
 
 
 @app.route("/setUserDataByMail", methods=["GET", "POST"])

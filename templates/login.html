@@ -13,17 +13,25 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
+
               <a class="nav-link active" href=index>Index<span class="sr-only"></span></a>
+
+              {% if isAdmin is defined and isAdmin == 1 %}
               <a class="nav-link active" href=register>Register<span class="sr-only"></span></a>
+              {% endif %}
+
+              {% if isLoggedIn == 1 %}
               <a class="nav-link active" href=login>Login<span class="sr-only">(current)</span></a>
+              {% endif %}
             </div>
           </div>
       </nav>
       <div class='page'>
-            <div class="column is-4 is-offset-4">
-                <h3 class="title">Login</h3>
+          <br>
+            <img width="60" height="40" src="/static/images/logo.png" alt="logoTesserakt"/>
+                <div class="column is-4 is-offset-4">
                 <div class="box">
-                    <h1>Sign In</h1>
+                    <h1>Creer un compte</h1>
                     <form action="" method="post" novalidate>
                         {{ form.hidden_tag() }}
                         <p>
@@ -41,3 +49,49 @@
         </div>
     </body>
 </html>
+<style>
+.body{
+    background-color: ligth-grey;
+}
+.page{
+  background-image: url('/static/images/background.jpg');
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.9;
+  border-color: #BFAB25;
+  border-width : 2px ;
+  border-style: solid;
+  text-align: center;
+  padding: 0 15%;
+}
+a{
+  color: #2D3142;
+}
+h1, h2 {
+  font-family: 'Roboto', cursive;
+}
+p {
+  font-family: 'Roboto', sans-serif;
+  line-height: 27px;
+  font-size: 127%;
+}
+.bording{
+  border: 1px darkgray solid;
+  padding: 2%;
+  margin-bottom: 120px;
+}
+.content{
+  text-align: left;
+  margin: 2%;
+}
+.carousel{
+  margin: 10%;
+  padding: 10%;
+}
+img{
+  height: 30px;
+  height: auto;
+}
+</style>
