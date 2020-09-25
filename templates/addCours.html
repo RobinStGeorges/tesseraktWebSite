@@ -32,16 +32,28 @@
       <div class='page'>
             <div class="column is-4 is-offset-4">
                 <div class="box">
-                    <h1>Connectez-vous !</h1>
+                    <h1>Ajouter un cours</h1>
                     <form action="" method="post" novalidate>
                         {{ form.hidden_tag() }}
                         <p>
-                            {{ form.email.label }}<br>
-                            {{ form.email(size=32) }}
+                            {{ form.id_exercice.label }}<br>
+                            {{ form.id_exercice(size=3) }}
                         </p>
                         <p>
-                            {{ form.password.label }}<br>
-                            {{ form.password(size=32) }}
+                            {{ form.titre.label }}<br>
+                            {{ form.titre(size=32) }}
+                        </p>
+                        <p>
+                            {{ form.description.label }}<br>
+                            {{ form.description(cols="35", rows="3") }}
+                        </p>
+                        <p>
+                            {{ form.contenue.label }}<br>
+                            {{ form.contenue(cols="35", rows="3") }}
+                        </p>
+                        <p>
+                            {{ form.mediaPath.label }}<br>
+                            {{ form.mediaPath(size=32) }}
                         </p>
                         <p>{{ form.submit() }}</p>
                     </form>
