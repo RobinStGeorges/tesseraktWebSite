@@ -2,30 +2,24 @@
 {% block body %}
 <div class="column is-4 is-offset-4">
     <div class="box">
-        <h1>Ajouter un cours</h1>
-        <form action="" method="post" novalidate>
-            {{ form.hidden_tag() }}
+        <h1>Nouvel état de la commande</h1>
+        <form action="/updateOrderByEmail" method="post" novalidate>
             <p>
-                {{ form.id_exercice.label }}<br>
-                {{ form.id_exercice(size=3) }}
+                <select name="email" id="mailFormInput">
+                    {% for email in emails %}
+                    <option value={{ email }}>{{ email }}</option>
+                    {% endfor %}
+                </select>
             </p>
             <p>
-                {{ form.titre.label }}<br>
-                {{ form.titre(size=32) }}
+                <select name="status" id="mailFormInput">
+                    <option value="Aucune">Aucune</option>
+                    <option value="EnCours">En Cours</option>
+                    <option value="Envoye">Envoyé</option>
+                    <option value="Livre">Livré</option>
+                </select>
             </p>
-            <p>
-                {{ form.description.label }}<br>
-                {{ form.description(cols="35", rows="3") }}
-            </p>
-            <p>
-                {{ form.contenue.label }}<br>
-                {{ form.contenue(cols="35", rows="3") }}
-            </p>
-            <p>
-                {{ form.mediaPath.label }}<br>
-                {{ form.mediaPath(size=32) }}
-            </p>
-            <p>{{ form.submit() }}</p>
+            <p><input type="submit" class="btn btn-primary" value="Mettre à jours"></input></p>
         </form>
     </div>
 </div>

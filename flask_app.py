@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template, request, url_for, session, Response
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import Column, Integer, DateTime
 import flask
 from flask import jsonify, flash
 import os
@@ -9,8 +10,15 @@ from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired
 import flask_login
 from flask_login  import LoginManager, UserMixin, login_required, login_user, logout_user
-from wtforms import Form, BooleanField, StringField, PasswordField, validators, SubmitField, IntegerField
+from wtforms import Form, BooleanField, StringField, PasswordField, validators, SubmitField, IntegerField, SelectField
 from wtforms.widgets import TextArea
+from sqlalchemy import inspect
+import json
+import time
+import datetime
+import _datetime
+
+
 ###############################################################################
 
 #APP CONF
@@ -40,6 +48,128 @@ bcrypt = Bcrypt(app)
 db = SQLAlchemy(app)
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+
+################################################################################
+
+#CLASS
+
+class UserData(db.Model):
+
+    __tablename__ = "userdata"
+
+    id = db.Column(db.Integer, primary_key=True)
+    id_exercice = db.Column(db.Integer)
+    mail = db.Column(db.String(255))
+    date_start = db.Column(db.DateTime)
+    date_end = db.Column(db.DateTime)
+
+class User(db.Model, UserMixin):
+    def __init__(self, emailUser, userPassword):
+        self.email = emailUser
+        self.password = userPassword
+        self.isAdmin = 0
+    __tablename__ = 'user'
+
+    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    email = db.Column(db.String(100))
+    password = db.Column(db.String(100))
+    isAdmin = db.Column(db.Integer)
+
+class UserOrder(db.Model):
+    def __init__(self, email, status, date_init):
+        self.email = email
+        self.status = status
+        self.date_init = date_init
+
+    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    email = db.Column(db.String(100))
+    status = db.Column(db.String(100))
+    date_init = db.Column(db.Date)
+    date_sent = db.Column(db.Date)
+    date_received = db.Column(db.Date)
+
+
+class Cours(db.Model):
+    def __init__(self, id_exercice, titre, description, contenue, mediaPath):
+        self.id_exercice = id_exercice
+        self.titre = titre
+        self.description = description
+        self.contenue = contenue
+        self.mediaPath = mediaPath
+    id_cours = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    id_exercice = db.Column(db.Integer)
+    titre = db.Column(db.String(100))
+    description = db.Column(db.String(255))
+    contenue =  db.Column(db.String(255))
+    mediaPath =  db.Column(db.String(255))
+
+class Exercice(db.Model):
+    def __init__(self, titre, description, contenue, mediaPath, id_reponse, imgPath, cube_needed, matrix_size_x, matrix_size_y, disponible, matrix_size_x_board, matrix_size_y_board, coord_finish, x_start, y_start):
+        self.titre = titre
+        self.description = description
+        self.contenue = contenue
+        self.mediaPath = mediaPath
+        self.id_reponse = id_reponse
+        self.imgPath = imgPath
+        self.cube_needed = cube_needed
+        self.matrix_size_x = matrix_size_x
+        self.matrix_size_y = matrix_size_y
+        self.disponible = disponible
+        self.matrix_size_x_board = matrix_size_x_board
+        self.matrix_size_y_board = matrix_size_y_board
+        self.coord_finish = coord_finish
+        self.x_start = x_start
+        self.y_start = y_start
+    id_exercice = db.Column(db.Integer, primary_key=True)
+    titre = db.Column(db.String(255))
+    description = db.Column(db.String(255))
+    contenue =  db.Column(db.String(255))
+    mediaPath =  db.Column(db.String(255))
+    id_reponse = db.Column(db.Integer)
+    imgPath = db.Column(db.String(255))
+    imgReponsePath = db.Column(db.String(255))
+    cube_needed = db.Column(db.String(255))
+    matrix_size_x = db.Column(db.Integer)
+    matrix_size_y = db.Column(db.Integer)
+    disponible = db.Column(db.Integer)
+    matrix_size_x_board = db.Column(db.Integer)
+    matrix_size_y_board = db.Column(db.Integer)
+    coord_finish = db.Column(db.String(30))
+    x_start = db.Column(db.Integer)
+    y_start = db.Column(db.Integer)
+
+class UserResponse(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255))
+    coord_x = db.Column(db.Integer)
+    coord_y = db.Column(db.Integer)
+
+class IdcudeToAction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255))
+    id_cube = db.Column(db.Integer)
+    action = db.Column(db.String(255))
+
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        # cls = self.__class__
+        if isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%d %H:%M:%S.%f')
+        elif isinstance(obj, uuid.UUID):
+            return str(obj)
+        elif hasattr(obj, '__html__'):
+            return str(obj.__html__())
+        elif isinstance(obj, OrderedDict):
+            m = json.dumps(obj)
+        elif hasattr(obj, 'to_dict'):
+            return obj.to_dict()
+        else:
+            mp = pformat(obj, indent=2)
+            print("JsonEncodeError", type(obj), mp)
+            m = json.JSONEncoder.default(self, obj)
+        return m
+
 ################################################################################
 
 #FORMULAIRES
@@ -52,6 +182,18 @@ class RegisterForm(FlaskForm):
     email = StringField('email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('enregistrer')
+
+def getUserDataEmail():
+        users = User.query.all()
+        listName = []
+        for user in users:
+            listName.append(user.email)
+        return listName
+
+class OrderForm(FlaskForm):
+    submit = SubmitField('Mise a jour')
+
+
 
 class CoursForm(FlaskForm):
     id_exercice = IntegerField('id_exercice', validators=[DataRequired()])
@@ -80,93 +222,6 @@ class ExerciceForm(FlaskForm):
     y_start = IntegerField('y_start', validators=[DataRequired()])
 
     submit = SubmitField('Ajouter')
-################################################################################
-
-#CLASS
-class UserData(db.Model):
-
-    __tablename__ = "userdata"
-
-    id = db.Column(db.Integer, primary_key=True)
-    id_exercice = db.Column(db.Integer)
-    mail = db.Column(db.String(255))
-    date_start = db.Column(db.DateTime)
-    date_end = db.Column(db.DateTime)
-
-
-class User(db.Model, UserMixin):
-    def __init__(self, emailUser, userPassword):
-        self.email = emailUser
-        self.password = userPassword
-        self.isAdmin = 0
-    __tablename__ = 'user'
-
-    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
-    email = db.Column(db.String(100))
-    password = db.Column(db.String(100))
-    isAdmin = db.Column(db.Integer)
-
-class Order(db.Model):
-    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
-    email = db.Column(db.String(100))
-    status = db.Column(db.String(100))
-
-class Cours(db.Model):
-    def __init__(self, id_exercice, titre, description, contenue, mediaPath):
-        self.id_exercice = id_exercice
-        self.titre = titre
-        self.description = description
-        self.contenue = contenue
-        self.mediaPath = mediaPath
-
-    id_cours = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
-    id_exercice = db.Column(db.Integer)
-    titre = db.Column(db.String(100))
-    description = db.Column(db.String(255))
-    contenue =  db.Column(db.String(255))
-    mediaPath =  db.Column(db.String(255))
-
-class Exercice(db.Model):
-
-    def __init__(self, titre, description, contenue, mediaPath, id_reponse, imgPath, cube_needed, matrix_size_x, matrix_size_y, disponible, matrix_size_x_board, matrix_size_y_board, coord_finish, x_start, y_start):
-        self.titre = titre
-        self.description = description
-        self.contenue = contenue
-        self.mediaPath = mediaPath
-        self.id_reponse = id_reponse
-        self.imgPath = imgPath
-        self.cube_needed = cube_needed
-        self.matrix_size_x = matrix_size_x
-        self.matrix_size_y = matrix_size_y
-        self.disponible = disponible
-        self.matrix_size_x_board = matrix_size_x_board
-        self.matrix_size_y_board = matrix_size_y_board
-        self.coord_finish = coord_finish
-        self.x_start = x_start
-        self.y_start = y_start
-    id_exercice = db.Column(db.Integer, primary_key=True)
-    titre = db.Column(db.String(100))
-    description = db.Column(db.String(255))
-    contenue =  db.Column(db.String(255))
-    mediaPath =  db.Column(db.String(255))
-    id_reponse = db.Column(db.Integer)
-    imgPath = db.Column(db.String(255))
-    imgReponsePath = db.Column(db.String(255))
-    cube_needed = db.Column(db.String(255))
-    matrix_size_x = db.Column(db.Integer)
-    matrix_size_y = db.Column(db.Integer)
-    disponible = db.Column(db.Integer)
-    matrix_size_x_board = db.Column(db.Integer)
-    matrix_size_y_board = db.Column(db.Integer)
-    coord_finish = db.Column(db.String(30))
-    x_start = db.Column(db.Integer)
-    y_start = db.Column(db.Integer)
-
-class UserResponse(db.Model):
-        id = db.Column(db.Integer, primary_key=True)
-        email = db.Column(db.String(255))
-        coord_x = db.Column(db.Integer)
-        coord_y = db.Column(db.Integer)
 
 ################################################################################
 
@@ -248,7 +303,7 @@ def info():
         session['isLoggedIn'] = 0
     if  session.get("isAdmin") is None:
         session['isAdmin'] = 0
-    return render_template('infos.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
+    return render_template('infos.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'], email=session['email'])
 
 @app.route('/protected')
 @flask_login.login_required
@@ -309,6 +364,50 @@ def addExercice():
         return redirect(url_for('info'))
     else:
         return render_template('addExercice.html', form=form, admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
+
+@app.route("/updateOrderByEmail", methods=["GET", "POST"])
+def updateOrderByEmail():
+    if  session.get("isLoggedIn") is None:
+        session['isLoggedIn'] = 0
+    if  session.get("isAdmin") is None:
+        session['isAdmin'] = 0
+    if request.method == 'POST':
+        req = request.form
+        userEmail = req['email']
+        status = req['status']
+        isHere = UserOrder.query.filter_by(email=userEmail).first() is not None
+        if not isHere:
+            date_init = _datetime.date.today()
+            order = UserOrder(userEmail, status, date_init)
+            db.session.add(order)
+            db.session.commit()
+            return redirect(url_for('index'))
+        else:
+            if(status == "EnCours"):
+                date_init = _datetime.date.today()
+                order = UserOrder(userEmail, status, date_init)
+                db.session.add(order)
+                db.session.commit()
+                return redirect(url_for('index'))
+
+            if(status == "Envoye"):
+                order = UserOrder.query.filter_by(email=userEmail).first()
+                order.status = status
+                order.date_sent = _datetime.date.today()
+                db.session.commit()
+                return redirect(url_for('index'))
+
+            if(status == "Livre"):
+                order = UserOrder.query.filter_by(email=userEmail).first()
+                order.status = status
+                order.date_received = _datetime.date.today()
+                db.session.commit()
+                return redirect(url_for('index'))
+
+    else:
+        listEMail = getUserDataEmail()
+        return render_template('updateorder.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'], emails=listEMail )
+
 ################################################################################
 
 #ROUTE FUNCTION
@@ -327,12 +426,54 @@ def setUserResponse():
 @app.route('/getCoursData', methods=["GET", "POST"])
 def getCoursData():
     cours = Cours.query.all()
-    return jsonify(cours)
+    jsonResponse = []
+    for aCours in cours:
+        json = {
+            'id_cours': aCours.id_cours,
+            'id_exercice': aCours.id_exercice,
+            'titre': aCours.titre,
+            'description': aCours.description,
+            'contenue': aCours.contenue,
+            'mediaPath': aCours.mediaPath
+        }
+        jsonResponse.append(json)
+    return jsonify(jsonResponse)
 
 @app.route('/getExerciceData', methods=["GET", "POST"])
 def getExerciceData():
     exercices = Exercice.query.all()
-    return jsonify(exercices)
+    jsonResponse = []
+    for exercice in exercices:
+        json = {
+            'id_exercice': exercice.id_exercice,
+            'titre': exercice.titre,
+            'description': exercice.description,
+            'contenue': exercice.contenue,
+            'mediaPath': exercice.mediaPath,
+            'id_reponse': exercice.id_reponse,
+            'imgPath': exercice.imgPath,
+            'imgReponsePath': exercice.imgReponsePath,
+            'cube_needed': exercice.cube_needed,
+            'matrix_size_x': exercice.matrix_size_x,
+            'matrix_size_y': exercice.matrix_size_y,
+            'disponible': exercice.disponible,
+            'matrix_size_x_board': exercice.matrix_size_x_board,
+            'matrix_size_y_board': exercice.matrix_size_y_board,
+            'coord_finish': exercice.coord_finish,
+            'x_start': exercice.x_start,
+            'y_start': exercice.y_start
+        }
+        jsonResponse.append(json)
+    return jsonify(jsonResponse)
+
+@app.route('/getResponseCubeData', methods=["GET", "POST"])
+def getResponseCubeData():
+    responses = users.query\
+    .join(friendships, users.id==friendships.user_id)\
+    .add_columns(users.userId, users.name, users.email, friends.userId, friendId)\
+    .filter(users.id == friendships.friend_id)\
+    .filter(friendships.user_id == userID)\
+    .paginate(page, 1, False)
 
 ################################################################################
 
@@ -350,6 +491,15 @@ def unauthorized_handler():
     return 'Unauthorized'
 ################################################################################
 
+# FUNCTIONS
+def object_as_dict(obj):
+    return {c.key: getattr(obj, c.key)
+            for c in inspect(obj).mapper.column_attrs}
+
+
+
+
+################################################################################
 
 
 

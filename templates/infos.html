@@ -32,6 +32,20 @@
       </nav>
       <div class='page'>
           <h3>Bienvenue</h3>
+          <p>Voici le récapitulatif pour {{ email }}</p>
+          <div class="row offsetAll">
+              <div class="col-5 offset">
+                    <div class="centeredTitle"><u>Commande :</u></div>
+
+              </div>
+              <div class="col-2">
+
+              </div>
+              <div class="col-5 offset">
+                  <div class="centeredTitle"><u>Avancement :</u></div>
+
+              </div>
+          </div>
       </div>
     </body>
 </html>
@@ -48,6 +62,19 @@
   border-style: solid;
   text-align: center;
   padding: 0 15%;
+}
+.offset{
+    padding: 15px;
+    margin 15px;
+    border-color: #BFAB25;
+    border-width : 2px ;
+    border-style: solid;
+}
+.centeredTitle{
+    text-align:center;
+}
+.offsetAll{
+    padding: 15px;
 }
 a{
   color: #2D3142;

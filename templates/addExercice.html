@@ -1,110 +1,78 @@
-<!DOCTYPE html>
-<html>
-    <header>
-        <link rel="stylesheet" link href="/static/css/index.css">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
-    </header>
-    <body>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" href="#">Navbar</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-
-              <a class="nav-link active" href=index>Index<span class="sr-only"></span></a>
-
-              {% if isAdmin is defined and isAdmin == 1 %}
-              <a class="nav-link active" href=register>Register<span class="sr-only">(current)</span></a>
-              {% endif %}
-
-              {% if isLoggedIn is defined and isLoggedIn == 1 %}
-              <a class="nav-link active" href=logout>logout<span class="sr-only"></span></a>
-              {% else %}
-              <a class="nav-link active" href=login>Login<span class="sr-only"></span></a>
-              {% endif %}
-
-            </div>
-          </div>
-      </nav>
-      <div class='page'>
-            <div class="column is-4 is-offset-4">
-                <div class="box">
-                    <h1>Ajouter un exercice</h1>
-                    <form action="" method="post" novalidate>
-                        {{ form.hidden_tag() }}
-                        <p>
-                            {{ form.titre.label }}<br>
-                            {{ form.titre(size=32) }}
-                        </p>
-                        <p>
-                            {{ form.description.label }}<br>
-                            {{ form.description(cols="35", rows="3") }}
-                        </p>
-                        <p>
-                            {{ form.contenue.label }}<br>
-                            {{ form.contenue(cols="35", rows="3") }}
-                        </p>
-                        <p>
-                            {{ form.mediaPath.label }}<br>
-                            {{ form.mediaPath(size=32) }}
-                        </p>
-                        <p>
-                            {{ form.id_reponse.label }}<br>
-                            {{ form.id_reponse(size=3) }}
-                        </p>
-                        <p>
-                            {{ form.imgPath.label }}<br>
-                            {{ form.imgPath(size=32) }}
-                        </p><p>
-                            {{ form.imgReponsePath.label }}<br>
-                            {{ form.imgReponsePath(size=32) }}
-                        </p>
-                        <p>
-                            {{ form.cube_needed.label }}<br>
-                            {{ form.cube_needed(cols="35", rows="3") }}
-                        </p>
-                        <p>
-                            {{ form.matrix_size_x.label }}<br>
-                            {{ form.matrix_size_x(size=3) }}
-                        </p>
-                        <p>
-                            {{ form.matrix_size_y.label }}<br>
-                            {{ form.matrix_size_y(size=3) }}
-                        </p>
-                        <p>
-                            {{ form.disponible.label }}<br>
-                            {{ form.disponible(size=3) }}
-                        </p>
-                        <p>
-                            {{ form.matrix_size_x_board.label }}<br>
-                            {{ form.matrix_size_x_board(size=3) }}
-                        </p>
-                        <p>
-                            {{ form.matrix_size_y_board.label }}<br>
-                            {{ form.matrix_size_y_board(size=3) }}
-                        </p>
-                        <p>
-                            {{ form.coord_finish.label }}<br>
-                            {{ form.coord_finish(size=35) }}
-                        </p>
-                        <p>
-                            {{ form.x_start.label }}<br>
-                            {{ form.x_start(size=3) }}
-                        </p>
-                        <p>
-                            {{ form.y_start.label }}<br>
-                            {{ form.y_start(size=3) }}
-                        </p>
-                        <p>{{ form.submit() }}</p>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </body>
-</html>
+{% extends 'base.html' %}
+{% block body %}
+<div class="column is-4 is-offset-4">
+    <div class="box">
+        <h1>Ajouter un exercice</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.titre.label }}<br>
+                {{ form.titre(size=32) }}
+            </p>
+            <p>
+                {{ form.description.label }}<br>
+                {{ form.description(cols="35", rows="3") }}
+            </p>
+            <p>
+                {{ form.contenue.label }}<br>
+                {{ form.contenue(cols="35", rows="3") }}
+            </p>
+            <p>
+                {{ form.mediaPath.label }}<br>
+                {{ form.mediaPath(size=32) }}
+            </p>
+            <p>
+                {{ form.id_reponse.label }}<br>
+                {{ form.id_reponse(size=3) }}
+            </p>
+            <p>
+                {{ form.imgPath.label }}<br>
+                {{ form.imgPath(size=32) }}
+            </p><p>
+                {{ form.imgReponsePath.label }}<br>
+                {{ form.imgReponsePath(size=32) }}
+            </p>
+            <p>
+                {{ form.cube_needed.label }}<br>
+                {{ form.cube_needed(cols="35", rows="3") }}
+            </p>
+            <p>
+                {{ form.matrix_size_x.label }}<br>
+                {{ form.matrix_size_x(size=3) }}
+            </p>
+            <p>
+                {{ form.matrix_size_y.label }}<br>
+                {{ form.matrix_size_y(size=3) }}
+            </p>
+            <p>
+                {{ form.disponible.label }}<br>
+                {{ form.disponible(size=3) }}
+            </p>
+            <p>
+                {{ form.matrix_size_x_board.label }}<br>
+                {{ form.matrix_size_x_board(size=3) }}
+            </p>
+            <p>
+                {{ form.matrix_size_y_board.label }}<br>
+                {{ form.matrix_size_y_board(size=3) }}
+            </p>
+            <p>
+                {{ form.coord_finish.label }}<br>
+                {{ form.coord_finish(size=35) }}
+            </p>
+            <p>
+                {{ form.x_start.label }}<br>
+                {{ form.x_start(size=3) }}
+            </p>
+            <p>
+                {{ form.y_start.label }}<br>
+                {{ form.y_start(size=3) }}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+    </div>
+</div>
+{% endblock %}
 <style>
 .page{
   background-image: url('/static/images/background.jpg');

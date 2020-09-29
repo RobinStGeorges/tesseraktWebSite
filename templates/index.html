@@ -1,57 +1,20 @@
-<!DOCTYPE html>
-<html>
-    <header>
-        <link rel="stylesheet" link href="/static/css/index.css">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
-    </header>
-    <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" href="#">Navbar</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
+{% extends 'base.html' %}
+{% block body %}
+    <h1>
+    Bienvenue sur Tesserakt !
+    </h1>
+    <div class="content">
+      <h2>Qu'est-ce-que Tesserakt ?</h2>
+      <p class="bording">Tesserakt est un produit permettant l'apprentissage des notions basiques et avancées de l'informatique dès le plus
+        jeune âge, en permettant une approche physique avec les éléments de code par le biais de cubes à moduler. </p>
+    </div>
+    <div class="content">
+      <h2>Comment se procurer un kit Tesserakt ?</h2>
+      <p class="bording">Le projet étant en phase de lancement, nous vous invitons à prendre contact avec nous à l'adresse Tesserakt.contact@gmail.com. <br> kit Tesserakt contient un cube "Master" réglé selon vos paramètres de connexions, 5 cubes "Commandes" ainsi que l'accès à nos cours et à nos exercices</p>
+      <p align="center"><a href=login ><button type="button" class="btn btn-outline-secondary">Connectez-vous !</button></a></p>
 
-              <a class="nav-link active" href=index>Index<span class="sr-only">(current)</span></a>
-                {% if admin is defined and admin == 1 %}
-                    <a class="nav-link active" href=addCours>AddCours<span class="sr-only"></span></a>
-                    <a class="nav-link active" href=addExercice>AddExercice<span class="sr-only"></span></a>
-                    <a class="nav-link active" href=register>Register<span class="sr-only">(current)</span></a>
-                {% endif %}
-
-                {% if isLoggedIn is defined and isLoggedIn == 1  %}
-                <a class="nav-link active" href=infos>Informations<span class="sr-only">(current)</span></a>
-                <a class="nav-link active" href=logout>Logout<span class="sr-only"></span></a>
-                {% else %}
-                <a class="nav-link active" href=login>Login<span class="sr-only"></span></a>
-                {% endif %}
-
-
-            </div>
-          </div>
-        </nav>
-        <div class="page">
-            <br>
-            <img width="60" height="40" src="/static/images/logo.png" alt="logoTesserakt"/>
-            <h1>
-            Bienvenue sur Tesserakt !
-            </h1>
-            <div class="content">
-              <h2>Qu'est-ce-que Tesserakt ?</h2>
-              <p class="bording">Tesserakt est un produit permettant l'apprentissage des notions basiques et avancées de l'informatique dès le plus
-                jeune âge, en permettant une approche physique avec les éléments de code par le biais de cubes à moduler. </p>
-            </div>
-            <div class="content">
-              <h2>Comment se procurer un kit Tesserakt ?</h2>
-              <p class="bording">Le projet étant en phase de lancement, nous vous invitons à prendre contact avec nous à l'adresse Tesserakt.contact@gmail.com. <br> kit Tesserakt contient un cube "Master" réglé selon vos paramètres de connexions, 5 cubes "Commandes" ainsi que l'accès à nos cours et à nos exercices</p>
-              <p align="center"><a href=register ><button type="button" class="btn btn-outline-secondary">creer un compte</button></a></p>
-
-            </div>
-        </div>
-    </body>
-</html>
+    </div>
+{% endblock %}
 <style>
 .page{
   background-image: url('/static/images/background.jpg');
