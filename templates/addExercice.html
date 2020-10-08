@@ -1,77 +1,124 @@
 {% extends 'base.html' %}
 {% block body %}
-<div class="column is-4 is-offset-4">
-    <div class="box">
         <h1>Ajouter un exercice</h1>
         <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
-            <p>
-                {{ form.titre.label }}<br>
-                {{ form.titre(size=32) }}
-            </p>
-            <p>
-                {{ form.description.label }}<br>
-                {{ form.description(cols="35", rows="3") }}
-            </p>
-            <p>
-                {{ form.contenue.label }}<br>
-                {{ form.contenue(cols="35", rows="3") }}
-            </p>
-            <p>
-                {{ form.mediaPath.label }}<br>
-                {{ form.mediaPath(size=32) }}
-            </p>
-            <p>
-                {{ form.id_reponse.label }}<br>
-                {{ form.id_reponse(size=3) }}
-            </p>
-            <p>
-                {{ form.imgPath.label }}<br>
-                {{ form.imgPath(size=32) }}
-            </p><p>
-                {{ form.imgReponsePath.label }}<br>
-                {{ form.imgReponsePath(size=32) }}
-            </p>
-            <p>
-                {{ form.cube_needed.label }}<br>
-                {{ form.cube_needed(cols="35", rows="3") }}
-            </p>
-            <p>
-                {{ form.matrix_size_x.label }}<br>
-                {{ form.matrix_size_x(size=3) }}
-            </p>
-            <p>
-                {{ form.matrix_size_y.label }}<br>
-                {{ form.matrix_size_y(size=3) }}
-            </p>
-            <p>
-                {{ form.disponible.label }}<br>
-                {{ form.disponible(size=3) }}
-            </p>
-            <p>
+            <div class="row">
+                <div class="col-6" name="gauche">
+                    {{ form.titre.label }}<br>
+                    {{ form.titre(size=32) }}
+                </div>
+                <div class="col-6" name="droite">
+                    {{ form.description.label }}<br>
+                    {{ form.description(cols="35", rows="3") }}
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-12">
+                    <center>{{ form.contenue.label }}</center>
+                    <br>
+                    <center>{{ form.contenue(cols="172", rows="3") }}</center>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-12">
+                    <center>
+                        {{ form.mediaPath.label }}
+                    </center>
+                    <br>
+                    <center>
+                        {{ form.mediaPath(size=32) }}
+                    </center>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-12">
+                    {{ form.id_reponse.label }}<br>
+                    {{ form.id_reponse(size=3) }}
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-12">
+                    <center>
+                        {{ form.imgPath.label }}
+                    </center>
+                    <br>
+                    <center>
+                        {{ form.imgPath(size=32) }}
+                    </center>
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-12">
+                    <center>
+                        {{ form.imgReponsePath.label }}
+                    </center>
+                    <br>
+                    <center>
+                        {{ form.imgReponsePath(size=32) }}
+                    </center>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    {{ form.cube_needed.label }}
+                    <br>
+                    {{ form.cube_needed(cols="172", rows="3") }}
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-6" style="text-align:right;">
+                    {{ form.matrix_size_x.label }}
+                    <br>
+                    {{ form.matrix_size_x(size=3) }}
+                </div>
+                <div class="col-6" style="text-align:left;">
+                    {{ form.matrix_size_y.label }}
+                    <br>
+                    {{ form.matrix_size_y(size=3) }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6" style="text-align:right;">
                 {{ form.matrix_size_x_board.label }}<br>
                 {{ form.matrix_size_x_board(size=3) }}
-            </p>
-            <p>
+                </div>
+                <div class="col-6" style="text-align:left;">
                 {{ form.matrix_size_y_board.label }}<br>
                 {{ form.matrix_size_y_board(size=3) }}
-            </p>
-            <p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6" style="text-align:right;">
+                    {{ form.x_start.label }}
+                    <br>
+                    {{ form.x_start(size=3) }}
+                </div>
+                <div class="col-6" style="text-align:left;">
+                    {{ form.y_start.label }}
+                    <br>
+                    {{ form.y_start(size=3) }}
+                </div>
+            </div>
+            <div class="form-group pull-center">
+                {{ form.disponible.label }}<br>
+                {{ form.disponible(size=3) }}
+            </div>
+
+            <div class="form-group pull-center">
                 {{ form.coord_finish.label }}<br>
-                {{ form.coord_finish(size=35) }}
-            </p>
-            <p>
-                {{ form.x_start.label }}<br>
-                {{ form.x_start(size=3) }}
-            </p>
-            <p>
-                {{ form.y_start.label }}<br>
-                {{ form.y_start(size=3) }}
-            </p>
-            <p>{{ form.submit() }}</p>
+                {{ form.coord_finish(size=3) }}
+            </div>
+            <div class="form-group pull-center">
+                {{ form.submit() }}
+            </div>
         </form>
-    </div>
-</div>
 {% endblock %}
 <style>
 .page{

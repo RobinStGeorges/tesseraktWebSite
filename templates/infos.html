@@ -1,35 +1,5 @@
-<!DOCTYPE html>
-<html>
-    <header>
-        <link rel="stylesheet" link href="/static/css/index.css">
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
-    </header>
-    <body>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" href="#">Navbar</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-
-                <a class="nav-link active" href=index>index<span class="sr-only">(current)</span></a>
-
-                {% if admin is defined and  admin == 1%}
-                <a class="nav-link active" href=register>register<span class="sr-only">(current)</span></a>
-                {% endif %}
-
-                {% if isLoggedIn is defined and isLoggedIn == 1 %}
-                <a class="nav-link active" href=logout>logout<span class="sr-only"></span></a>
-                {% else %}
-                <a class="nav-link active" href=login>Login<span class="sr-only"></span></a>
-                {% endif %}
-
-                <a class="nav-link active" href=infos>Informations<span class="sr-only">(current)</span></a>
-            </div>
-          </div>
-      </nav>
+{% extends 'base.html' %}
+{% block body %}
       <div class='page'>
           <h3>Bienvenue</h3>
           <p>Voici le récapitulatif pour {{ email }}</p>
@@ -47,8 +17,7 @@
               </div>
           </div>
       </div>
-    </body>
-</html>
+{% endblock %}
 <style>
 .page{
   background-image: url('/static/images/background.jpg');

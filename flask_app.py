@@ -10,13 +10,14 @@ from flask_wtf import FlaskForm
 from wtforms.validators import DataRequired
 import flask_login
 from flask_login  import LoginManager, UserMixin, login_required, login_user, logout_user
-from wtforms import Form, BooleanField, StringField, PasswordField, validators, SubmitField, IntegerField, SelectField
+from wtforms import Form, BooleanField, StringField, PasswordField, validators, SubmitField, IntegerField, SelectField, FileField
 from wtforms.widgets import TextArea
 from sqlalchemy import inspect
 import json
 import time
 import datetime
 import _datetime
+import requests
 
 
 ###############################################################################
@@ -200,17 +201,17 @@ class CoursForm(FlaskForm):
     titre = StringField('titre', validators=[DataRequired()])
     description = StringField('description', widget=TextArea(), validators=[DataRequired()])
     contenue =  StringField('contenue', widget=TextArea(), validators=[DataRequired()])
-    mediaPath =  StringField('mediaPath', validators=[DataRequired()])
+    mediaPath =  FileField('mediaPath', validators=[DataRequired()])
     submit = SubmitField('Ajouter')
 
 class ExerciceForm(FlaskForm):
     titre = StringField('titre', validators=[DataRequired()])
     description = StringField('description', widget=TextArea(), validators=[DataRequired()])
     contenue =  StringField('contenue', widget=TextArea(), validators=[DataRequired()])
-    mediaPath =  StringField('mediaPath', validators=[DataRequired()])
+    mediaPath =  FileField('mediaPath', validators=[DataRequired()])
     id_reponse = IntegerField('id_reponse', validators=[DataRequired()])
-    imgPath =  StringField('imgPath', validators=[DataRequired()])
-    imgReponsePath =  StringField('imgReponsePath', validators=[DataRequired()])
+    imgPath =  FileField('imgPath', validators=[DataRequired()])
+    imgReponsePath =  FileField('imgReponsePath', validators=[DataRequired()])
     cube_needed =  StringField('cube_needed',widget=TextArea(), validators=[DataRequired()])
     matrix_size_x = IntegerField('matrix_size_x', validators=[DataRequired()])
     matrix_size_y = IntegerField('matrix_size_y', validators=[DataRequired()])
@@ -265,25 +266,29 @@ def login():
         return render_template('login.html', form=form)
 
 @app.route("/register", methods=["GET", "POST"])
+@flask_login.login_required
 def register():
     if  session.get("isLoggedIn") is None:
         session['isLoggedIn'] = 0
     if  session.get("isAdmin") is None:
         session['isAdmin'] = 0
-    form = RegisterForm()
-    if request.method == 'POST':
-        userEmail = form.email.data
-        password = form.password.data
-        user=User.query.filter_by(email=userEmail).first()
-        if user is None:
-            user = User(userEmail, bcrypt.generate_password_hash(password))
-            db.session.add(user)
-            db.session.commit()
-            return redirect(url_for('info'))
+    if session['isLoggedIn'] and session['isAdmin']:
+        form = RegisterForm()
+        if request.method == 'POST':
+            userEmail = form.email.data
+            password = form.password.data
+            user=User.query.filter_by(email=userEmail).first()
+            if user is None:
+                user = User(userEmail, bcrypt.generate_password_hash(password))
+                db.session.add(user)
+                db.session.commit()
+                return redirect(url_for('info'))
+            else:
+                return jsonify('erreur: 401')
         else:
-            return jsonify('erreur: 401')
-    else:
-        return render_template('register.html', form=form, admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
+            return render_template('register.html', form=form, admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
+    else :
+        return redirect(url_for('login'))
 
 @app.route("/logout")
 @login_required
@@ -298,12 +303,16 @@ def logout():
     return redirect(url_for('login'))
 
 @app.route('/infos')
+@flask_login.login_required
 def info():
     if  session.get("isLoggedIn") is None:
         session['isLoggedIn'] = 0
     if  session.get("isAdmin") is None:
         session['isAdmin'] = 0
-    return render_template('infos.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'], email=session['email'])
+    if session['isLoggedIn'] and session['isAdmin']:
+        return render_template('infos.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'], email=session['email'])
+    else :
+        return redirect(url_for('login'))
 
 @app.route('/protected')
 @flask_login.login_required
@@ -315,55 +324,63 @@ def protected():
     return 'Logged in as: ' + flask_login.current_user.id
 
 @app.route("/addCours", methods=["GET", "POST"])
+@flask_login.login_required
 def addCours():
     if  session.get("isLoggedIn") is None:
         session['isLoggedIn'] = 0
     if  session.get("isAdmin") is None:
         session['isAdmin'] = 0
-    form = CoursForm()
-    if request.method == 'POST':
-        id_exercice = form.id_exercice.data
-        titre = form.titre.data
-        description = form.description.data
-        contenue = form.contenue.data
-        mediaPath = form.mediaPath.data
-        cours = Cours(id_exercice, titre, description, contenue, mediaPath)
-        db.session.add(cours)
-        db.session.commit()
-        return redirect(url_for('info'))
+    if session['isAdmin']:
+        form = CoursForm()
+        if request.method == 'POST':
+            id_exercice = form.id_exercice.data
+            titre = form.titre.data
+            description = form.description.data
+            contenue = form.contenue.data
+            mediaPath = form.mediaPath.data
+            cours = Cours(id_exercice, titre, description, contenue, mediaPath)
+            db.session.add(cours)
+            db.session.commit()
+            return redirect(url_for('info'))
+        else:
+            return render_template('addCours.html', form=form, admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
     else:
-        return render_template('addCours.html', form=form, admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
+        return redirect(url_for('login'), message="Vous n'êtes pas admin !")
 
 @app.route("/addExercice", methods=["GET", "POST"])
+@flask_login.login_required
 def addExercice():
     if  session.get("isLoggedIn") is None:
         session['isLoggedIn'] = 0
     if  session.get("isAdmin") is None:
         session['isAdmin'] = 0
-    form = ExerciceForm()
-    if request.method == 'POST':
-        titre = form.titre.data
-        description = form.description.data
-        contenue = form.contenue.data
-        mediaPath = form.mediaPath.data
-        id_reponse = form.id_reponse.data
-        imgPath = form.imgPath.data
-        imgReponsePath = form.imgReponsePath.data
-        cube_needed = form.cube_needed.data
-        matrix_size_x = form.matrix_size_x.data
-        matrix_size_y = form.matrix_size_y.data
-        disponible = form.disponible.data
-        matrix_size_x_board = form.matrix_size_x_board.data
-        matrix_size_y_board = form.matrix_size_y_board.data
-        coord_finish = form.coord_finish.data
-        x_start = form.x_start.data
-        y_start = form.y_start.data
-        exercice = Exercice(titre, description, contenue, mediaPath, id_reponse, imgPath, cube_needed, matrix_size_x, matrix_size_y, disponible, matrix_size_x_board, matrix_size_y_board, coord_finish, x_start, y_start)
-        db.session.add(exercice)
-        db.session.commit()
-        return redirect(url_for('info'))
+    if session['isAdmin']:
+        form = ExerciceForm()
+        if request.method == 'POST':
+            titre = form.titre.data
+            description = form.description.data
+            contenue = form.contenue.data
+            mediaPath = form.mediaPath.data
+            id_reponse = form.id_reponse.data
+            imgPath = form.imgPath.data
+            imgReponsePath = form.imgReponsePath.data
+            cube_needed = form.cube_needed.data
+            matrix_size_x = form.matrix_size_x.data
+            matrix_size_y = form.matrix_size_y.data
+            disponible = form.disponible.data
+            matrix_size_x_board = form.matrix_size_x_board.data
+            matrix_size_y_board = form.matrix_size_y_board.data
+            coord_finish = form.coord_finish.data
+            x_start = form.x_start.data
+            y_start = form.y_start.data
+            exercice = Exercice(titre, description, contenue, mediaPath, id_reponse, imgPath, cube_needed, matrix_size_x, matrix_size_y, disponible, matrix_size_x_board, matrix_size_y_board, coord_finish, x_start, y_start)
+            db.session.add(exercice)
+            db.session.commit()
+            return redirect(url_for('info'))
+        else:
+            return render_template('addExercice.html', form=form, admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
     else:
-        return render_template('addExercice.html', form=form, admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
+        return redirect(url_for('login'), message="Vous n'êtes pas admin !")
 
 @app.route("/updateOrderByEmail", methods=["GET", "POST"])
 def updateOrderByEmail():
@@ -415,7 +432,7 @@ def updateOrderByEmail():
 def setUserData():
     data = request.get_json()
     email = data.email
-    return jsonify('c\'est okay')
+    return jsonify(email)
 
 @app.route('/setUserResponse', methods=["GET", "POST"])
 def setUserResponse():
@@ -466,14 +483,32 @@ def getExerciceData():
         jsonResponse.append(json)
     return jsonify(jsonResponse)
 
-@app.route('/getResponseCubeData', methods=["GET", "POST"])
-def getResponseCubeData():
-    responses = users.query\
-    .join(friendships, users.id==friendships.user_id)\
-    .add_columns(users.userId, users.name, users.email, friends.userId, friendId)\
-    .filter(users.id == friendships.friend_id)\
-    .filter(friendships.user_id == userID)\
-    .paginate(page, 1, False)
+@app.route('/test', methods=["GET", "POST"])
+def test():
+    response = requests.get('https://jsonplaceholder.typicode.com/users')
+    #response = requests.get('http://kireta.pythonanywhere.com/getExerciceData')
+    data = response.json()
+
+    ress="truncate table cours;"
+
+    col = ""
+    val = ""
+    isString = ["name", "username"]
+    for item in data:
+        col = ""
+        val += "("
+        for value in item:
+            col += " " + str(value) + ","
+            # check if field is string field, add " "
+            if str(value) in isString:
+                val += "\"" + str(item[value]) + "\","
+            else:
+                val += " " + str(item[value]) + ","
+        val = val[:-1]
+        val += "),<br>"
+    val = val[:-1]
+    ress += "insert into cours (" + col + ") values " + val + ";"
+    return ress
 
 ################################################################################
 
@@ -488,7 +523,7 @@ def load_user(user_id):
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-    return 'Unauthorized'
+    return redirect(url_for('login'), message="Merci de vous identifier")
 ################################################################################
 
 # FUNCTIONS
