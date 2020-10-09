@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
+{% set active = "login" %}
 {% block body %}
 <div class="column is-4 is-offset-4">
     <div class="box">
         <h1>Se connecter</h1>
+        {% if message %}
+            {{ message }}
+        {% endif %}
         <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
             <p>

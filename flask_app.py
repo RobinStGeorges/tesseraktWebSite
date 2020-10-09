@@ -18,11 +18,13 @@ import time
 import datetime
 import _datetime
 import requests
+from configparser import ConfigParser
 
 
 ###############################################################################
 
 #APP CONF
+
 app = Flask(__name__)
 app.config.update(
     DEBUG = True,
@@ -35,11 +37,14 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "login"
 
+parser = ConfigParser()
+parser.read('database.config')
+
 SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
-    username="Kireta",
-    password="@Mdpdepasse2468",
-    hostname="Kireta.mysql.pythonanywhere-services.com",
-    databasename="Kireta$tesserakt",
+    username = parser.get('database_config','user'),
+    password = parser.get('database_config','pass'),
+    hostname = parser.get('database_config','host'),
+    databasename = parser.get('database_config','db'),
 )
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
@@ -50,19 +55,10 @@ db = SQLAlchemy(app)
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+
 ################################################################################
 
 #CLASS
-
-class UserData(db.Model):
-
-    __tablename__ = "userdata"
-
-    id = db.Column(db.Integer, primary_key=True)
-    id_exercice = db.Column(db.Integer)
-    mail = db.Column(db.String(255))
-    date_start = db.Column(db.DateTime)
-    date_end = db.Column(db.DateTime)
 
 class User(db.Model, UserMixin):
     def __init__(self, emailUser, userPassword):
@@ -140,6 +136,10 @@ class Exercice(db.Model):
     y_start = db.Column(db.Integer)
 
 class UserResponse(db.Model):
+    def __init__(self, email, coord_x, coord_y):
+        self.email = email
+        self.coord_x = coord_x
+        self.coord_y = coord_y
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255))
     coord_x = db.Column(db.Integer)
@@ -151,6 +151,22 @@ class IdcudeToAction(db.Model):
     id_cube = db.Column(db.Integer)
     action = db.Column(db.String(255))
 
+class UserData(db.Model):
+    def __init__(self, id_exercice, email, is_started, is_finished, date_start, date_end):
+        self.id_exercice = id_exercice
+        self.email = email
+        self.is_started = is_started
+        self.is_finished = is_finished
+        self.date_start = date_start
+        self.date_end = date_end
+
+    id = db.Column(db.Integer, primary_key=True)
+    id_exercice = db.Column(db.Integer)
+    email = db.Column(db.String(255))
+    is_started = db.Column(db.Integer)
+    is_finished = db.Column(db.Integer)
+    date_start = db.Column(db.Date)
+    date_end = db.Column(db.Date)
 
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -310,7 +326,9 @@ def info():
     if  session.get("isAdmin") is None:
         session['isAdmin'] = 0
     if session['isLoggedIn'] and session['isAdmin']:
-        return render_template('infos.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'], email=session['email'])
+        userOrder = UserOrder.query.filter_by(email=session['email']).first()
+        userDatas = UserData.query.filter_by(email=session['email']).all()
+        return render_template('infos.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'], email=session['email'], order = userOrder , datas= userDatas)
     else :
         return redirect(url_for('login'))
 
@@ -341,11 +359,11 @@ def addCours():
             cours = Cours(id_exercice, titre, description, contenue, mediaPath)
             db.session.add(cours)
             db.session.commit()
-            return redirect(url_for('info'))
+            return redirect(url_for('info', message="Cours bien ajoute"))
         else:
             return render_template('addCours.html', form=form, admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
     else:
-        return redirect(url_for('login'), message="Vous n'êtes pas admin !")
+        return redirect(url_for('login', message="Vous n'etes pas admin !"))
 
 @app.route("/addExercice", methods=["GET", "POST"])
 @flask_login.login_required
@@ -376,11 +394,11 @@ def addExercice():
             exercice = Exercice(titre, description, contenue, mediaPath, id_reponse, imgPath, cube_needed, matrix_size_x, matrix_size_y, disponible, matrix_size_x_board, matrix_size_y_board, coord_finish, x_start, y_start)
             db.session.add(exercice)
             db.session.commit()
-            return redirect(url_for('info'))
+            return redirect(url_for('info', message="Exercice bien ajoute"))
         else:
             return render_template('addExercice.html', form=form, admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'])
     else:
-        return redirect(url_for('login'), message="Vous n'êtes pas admin !")
+        return redirect(url_for('login',  message="Vous n'etes pas admin !"))
 
 @app.route("/updateOrderByEmail", methods=["GET", "POST"])
 def updateOrderByEmail():
@@ -523,7 +541,7 @@ def load_user(user_id):
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-    return redirect(url_for('login'), message="Merci de vous identifier")
+    return redirect(url_for('login', message="Merci de vous identifier"))
 ################################################################################
 
 # FUNCTIONS

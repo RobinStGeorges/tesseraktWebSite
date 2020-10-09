@@ -1,22 +1,141 @@
 {% extends 'base.html' %}
+{% set active = "infos" %}
 {% block body %}
-      <div class='page'>
-          <h3>Bienvenue</h3>
-          <p>Voici le récapitulatif pour {{ email }}</p>
-          <div class="row offsetAll">
-              <div class="col-5 offset">
-                    <div class="centeredTitle"><u>Commande :</u></div>
 
-              </div>
-              <div class="col-2">
+<h3>Bienvenue</h3>
+{% if message is defined %}
+{{ message }}
+{% endif %}
+<p>Voici le récapitulatif pour {{ email }}</p>
+<div class="row offsetAll">
+  <div class="col-5 offset">
+        <div class="centeredTitle">
+            <u>
+                <h1>Commande :</h1>
+            </u>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-5" style="text-align:left;">
+                <p>Statut</p>
+                <hr>
+                <p>Date initial</p>
+                <hr>
+                <p>Date d'envoi</p>
+                <hr>
+                <p>Date reception</p>
+            </div>
+            <div class="col-2 pull-center">
+                <p>:</p>
+                <hr>
+                <p>:</p>
+                <hr>
+                <p>:</p>
+                <hr>
+                <p>:</p>
+            </div>
+            <div class="col-5" style="text-align:right;">
+                <p>
+                    {{ order.status }}
+                </p>
+                <hr>
+                <p>
+                    {% if order.date_init == None %}
+                        Votre commande n'est pas encore initialisé ...
+                    {% else %}
+                        {{ order.date_init }}
+                    {% endif %}
+                </p>
+                <hr>
+                <p>
+                   {% if order.date_sent == None %}
+                        Votre commande n'est pas encore envoyé ...
+                    {% else %}
+                        {{ order.date_sent }}
+                    {% endif %}
+                </p>
+                <hr>
+                <p>
+                    {% if order.date_received == None %}
+                        En attente ...
+                    {% else %}
+                        {{ order.date_received }}
+                    {% endif %}
+                </p>
 
-              </div>
-              <div class="col-5 offset">
-                  <div class="centeredTitle"><u>Avancement :</u></div>
+            </div>
+        </div>
+        <br>
+  </div>
+  <div class="col-2">
 
-              </div>
-          </div>
-      </div>
+  </div>
+  <div class="col-5 offset">
+    <div class="centeredTitle">
+        <u>
+            <h1>Avancement :</h1>
+        </u>
+    </div>
+
+        <p>
+            <h2>Cours :</h2>
+        </p>
+        {% if cours %}
+            {% for unCours in cours %}
+
+            {% endfor %}
+        {% else %}
+            Vous n'avez pas encore commencez de cours ...
+        {% endif %}
+        <p>
+            <h2>Exercices :</h2>
+        </p>
+        {% if datas %}
+            {% for exercice in datas %}
+                <div class="row">
+                    <div class="col-5" style="text-align:left;">
+                        <p>id</p>
+                        <hr>
+                        <p>Commencé</p>
+                        <hr>
+                        <p>Le</p>
+                        <hr>
+                        <p>Terminé</p>
+                        <hr>
+                        <p>Le</p>
+                    </div>
+                    <div class="col-1" style="text-align:center;">
+                        <p>:</p>
+                        <hr>
+                        <p>:</p>
+                        <hr>
+                        <p>:</p>
+                        <hr>
+                        <p>:</p>
+                        <hr>
+                        <p>:</p>
+                    </div>
+                    <div class="col-5" style="text-align:right;">
+                        <p>{{ exercice.id_exercice }}</p>
+                        <hr>
+                        <p>{% if exercice.is_started == 1 %} oui {% else %} non {% endif %}</p>
+                        <hr>
+                        <p>{% if exercice.date_start %} {{ exercice.date_start }} {% else %} non commencé {% endif %}</p>
+                        <hr>
+                        <p>{% if exercice.is_finished == 1 %} oui {% else %} non {% endif %}</p>
+                        <hr>
+                        <p>{% if exercice.date_end %} {{ exercice.date_start }} {% else %} non fini {% endif %}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            Vous n'avez pas encore commencé d'exercices ...
+        {% endif %}
+        <br>
+    </div>
+</div>
+
+  <br><br>
 {% endblock %}
 <style>
 .page{
@@ -31,6 +150,7 @@
   border-style: solid;
   text-align: center;
   padding: 0 15%;
+  padding-top: 10px;
 }
 .offset{
     padding: 15px;

@@ -13,27 +13,29 @@
     </header>
     <body>
         <!-- NAVBAR -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" style="font-size:11px">
           <a class="navbar-brand" href="#">Navbar</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-
-              <a class="nav-link active" href=index>Index<span class="sr-only">(current)</span></a>
+                {% if active == None %}
+                    {% set active = "index" %}
+                {% endif %}
+                <a class="nav-link {% if active == "index" %} active {% endif %}" href=index>Index<span class="sr-only">(current)</span></a>
                 {% if admin is defined and admin == 1 %}
-                    <a class="nav-link active" href=addCours>ajouter un cours<span class="sr-only"></span></a>
-                    <a class="nav-link active" href=addExercice>ajouter un exercice<span class="sr-only"></span></a>
-                    <a class="nav-link active" href=register>creer un compte<span class="sr-only"></span></a>
-                    <a class="nav-link active" href=updateOrderByEmail>Mettre a jour commande<span class="sr-only"></span></a>
+                    <a class="nav-link {% if active == "addCours" %} active {% endif %}" href=addCours>ajouter un cours<span class="sr-only"></span></a>
+                    <a class="nav-link {% if active == "addExercice" %} active {% endif %}" href=addExercice>ajouter un exercice<span class="sr-only"></span></a>
+                    <a class="nav-link {% if active == "register" %} active {% endif %}" href=register>creer un compte<span class="sr-only"></span></a>
+                    <a class="nav-link {% if active == "updateOrderByEmail" %} active {% endif %}" href=updateOrderByEmail>Mettre a jour commande<span class="sr-only"></span></a>
                 {% endif %}
 
                 {% if isLoggedIn is defined and isLoggedIn == 1  %}
-                <a class="nav-link active" href=infos>informations<span class="sr-only">(current)</span></a>
-                <a class="nav-link active" href=logout>deconnection<span class="sr-only"></span></a>
+                <a class="nav-link {% if active == "infos" %} active {% endif %}" href=infos>informations<span class="sr-only"></span></a>
+                <a class="nav-link{% if active == "logout" %} active {% endif %} " href=logout>deconnection<span class="sr-only"></span></a>
                 {% else %}
-                <a class="nav-link active" href=login>connexion<span class="sr-only"></span></a>
+                <a class="nav-link {% if active == "login" %} active {% endif %}" href=login>connexion<span class="sr-only"></span></a>
                 {% endif %}
 
 
@@ -44,11 +46,13 @@
 
         <div class="page">
             <br>
-            <img width="60" height="40" src="/static/images/logo.png" alt="logoTesserakt"/>
+            <img width="60" height="40" src="/static/images/logo.png" alt="logoTesserakt" />
+            <br>
             {% block body %}{% endblock %}
         </div>
     </body>
 </html>
+
 <style>
 .page{
   background-image: url('/static/images/background.jpg');
@@ -62,6 +66,7 @@
   border-style: solid;
   text-align: center;
   padding: 0 15%;
+  font-size: 13px;
 }
 a{
   color: #2D3142;
