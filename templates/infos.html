@@ -41,7 +41,7 @@
                 <hr>
                 <p>
                     {% if order.date_init == None %}
-                        Votre commande n'est pas encore initialisé ...
+                        Non initialisé ...
                     {% else %}
                         {{ order.date_init }}
                     {% endif %}
@@ -49,7 +49,7 @@
                 <hr>
                 <p>
                    {% if order.date_sent == None %}
-                        Votre commande n'est pas encore envoyé ...
+                        En cours d'envoi ...
                     {% else %}
                         {{ order.date_sent }}
                     {% endif %}

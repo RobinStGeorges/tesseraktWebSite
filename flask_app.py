@@ -325,7 +325,7 @@ def info():
         session['isLoggedIn'] = 0
     if  session.get("isAdmin") is None:
         session['isAdmin'] = 0
-    if session['isLoggedIn'] and session['isAdmin']:
+    if session['isLoggedIn']:
         userOrder = UserOrder.query.filter_by(email=session['email']).first()
         userDatas = UserData.query.filter_by(email=session['email']).all()
         return render_template('infos.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'], email=session['email'], order = userOrder , datas= userDatas)
@@ -440,8 +440,9 @@ def updateOrderByEmail():
                 return redirect(url_for('index'))
 
     else:
+        orders = UserOrder.query.all()
         listEMail = getUserDataEmail()
-        return render_template('updateorder.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'], emails=listEMail )
+        return render_template('updateorder.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'], emails=listEMail, orders = orders )
 
 ################################################################################
 

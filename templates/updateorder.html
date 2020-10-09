@@ -23,6 +23,57 @@
             <p><input type="submit" class="btn btn-primary" value="Mettre à jours"></input></p>
         </form>
     </div>
+    <div class="row">
+        <div class="col-2 between">
+            id
+        </div>
+        <div class="col-2 between">
+            email
+        </div>
+        <div class="col-2 between">
+            statut
+        </div>
+        <div class="col-2 between">
+            date_init
+        </div>
+        <div class="col-2 between">
+            date_sent
+        </div>
+        <div class="col-2 between">
+            date_received
+        </div>
+    </div>
+    {% if orders %}
+        {% for order in orders %}
+            <div class="row">
+                <div class="col-2 between">
+                    {{ order.id }}
+                </div>
+                <hr>
+                <div class="col-2 between">
+                    {{ order.email }}
+                </div>
+                <hr>
+                <div class="col-2 between">
+                    {{ order.status }}
+                </div>
+                <hr>
+                <div class="col-2 between">
+                    {{ order.date_init }}
+                </div>
+                <hr>
+                <div class="col-2 between">
+                    {{ order.date_sent }}
+                </div>
+                <hr>
+                <div class="col-2 between">
+                    {{ order.date_received }}
+                </div>
+
+            </div>
+        {% endfor %}
+    {% endif %}
+    <br>
 </div>
 {% endblock %}
 <style>
@@ -66,5 +117,9 @@ p {
 img{
   height: 30px;
   height: auto;
+}
+.between{
+  border-bottom: 2px solid #BFAB25;
+  border-top: 2px solid #BFAB25;
 }
 </style>
