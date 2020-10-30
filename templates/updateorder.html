@@ -54,8 +54,8 @@
                     {{ order.email }}
                 </div>
                 <hr>
-                <div class="col-2 between">
-                    {{ order.status }}
+                <div class="col-2 between" style="text-align:right;">
+                    {{ order.status }} <button type="button" class="btn btn-warning" onclick="window.location.href='{{ url_for( 'updateOrderById', id= order.id) }}';"> + </button>
                 </div>
                 <hr>
                 <div class="col-2 between">

@@ -270,6 +270,8 @@ def login():
         userEmail = form.email.data
         password = form.password.data
         user=User.query.filter_by(email=userEmail).first()
+        if user==None:
+            return render_template('login.html', form=form, message="Mail ou mot de passe incorrect")
         if bcrypt.check_password_hash(user.password, password):
             login_user(user)
             session['isLoggedIn'] = 1
@@ -416,34 +418,53 @@ def updateOrderByEmail():
             order = UserOrder(userEmail, status, date_init)
             db.session.add(order)
             db.session.commit()
-            return redirect(url_for('index'))
+            return redirect(url_for('updateOrderByEmail'))
         else:
             if(status == "EnCours"):
                 date_init = _datetime.date.today()
                 order = UserOrder(userEmail, status, date_init)
                 db.session.add(order)
                 db.session.commit()
-                return redirect(url_for('index'))
+                return redirect(url_for('updateOrderByEmail'))
 
             if(status == "Envoye"):
                 order = UserOrder.query.filter_by(email=userEmail).first()
                 order.status = status
                 order.date_sent = _datetime.date.today()
                 db.session.commit()
-                return redirect(url_for('index'))
+                return redirect(url_for('updateOrderByEmail'))
 
             if(status == "Livre"):
                 order = UserOrder.query.filter_by(email=userEmail).first()
                 order.status = status
                 order.date_received = _datetime.date.today()
                 db.session.commit()
-                return redirect(url_for('index'))
+                return redirect(url_for('updateOrderByEmail'))
 
     else:
         orders = UserOrder.query.all()
         listEMail = getUserDataEmail()
         return render_template('updateorder.html', admin=session['isAdmin'], isLoggedIn=session['isLoggedIn'], emails=listEMail, orders = orders )
 
+@app.route("/updateOrderById/<id>", methods=["GET", "POST"])
+def updateOrderById(id):
+    userOrder = UserOrder.query.filter_by(id=id).first()
+    if userOrder.status == "EnCours":
+        userOrder.status = "Envoye"
+        userOrder.date_sent = _datetime.date.today()
+        db.session.commit()
+        return redirect(url_for('updateOrderByEmail'))
+
+    elif userOrder.status == "Envoye":
+        userOrder.status = "Livre"
+        userOrder.date_received = _datetime.date.today()
+        db.session.commit()
+        return redirect(url_for('updateOrderByEmail'))
+
+    elif userOrder.status == "Livre":
+        return redirect(url_for('updateOrderByEmail', message = "le produit est déjà livré !"))
+
+    return jsonify(userOrder)
 ################################################################################
 
 #ROUTE FUNCTION
@@ -524,7 +545,7 @@ def test():
             else:
                 val += " " + str(item[value]) + ","
         val = val[:-1]
-        val += "),<br>"
+        val += "),"
     val = val[:-1]
     ress += "insert into cours (" + col + ") values " + val + ";"
     return ress

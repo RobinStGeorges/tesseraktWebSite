@@ -3,10 +3,11 @@
 {% block body %}
 
 <h3>Bienvenue</h3>
-{% if message is defined %}
-{{ message }}
-{% endif %}
 <p>Voici le récapitulatif pour {{ email }}</p>
+<br>
+        {% if message %}
+            {{ message }}
+        {% endif %}
 <div class="row offsetAll">
   <div class="col-5 offset">
         <div class="centeredTitle">
